@@ -167,12 +167,27 @@
             <key>heuristicMask</key>
             <false/>
             <key>defaultPivotPoint</key>
-            <point_f>0.5,0.5</point_f>
+            <point_f>0,0</point_f>
             <key>writePivotPoints</key>
             <true/>
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
+            <key type="filename">../Sprites/background.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>200,142,400,284</rect>
+                <key>scale9Paddings</key>
+                <rect>200,142,400,284</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">../Sprites/ball_Bounce_1.png</key>
             <key type="filename">../Sprites/ball_Bounce_10.png</key>
             <key type="filename">../Sprites/ball_Bounce_2.png</key>
@@ -271,6 +286,25 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
+            <key type="filename">../Sprites/death.png</key>
+            <key type="filename">../Sprites/gameOver.png</key>
+            <key type="filename">../Sprites/pause.png</key>
+            <key type="filename">../Sprites/title.png</key>
+            <key type="filename">../Sprites/win.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>125,100,250,200</rect>
+                <key>scale9Paddings</key>
+                <rect>125,100,250,200</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">../Sprites/paddle_1.png</key>
             <key type="filename">../Sprites/paddle_2.png</key>
             <key type="filename">../Sprites/paddle_3.png</key>
@@ -290,6 +324,21 @@
                 <rect>22,5,45,10</rect>
                 <key>scale9Paddings</key>
                 <rect>22,5,45,10</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../Sprites/pressStart.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>116,8,233,15</rect>
+                <key>scale9Paddings</key>
+                <rect>116,8,233,15</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>

@@ -4,7 +4,7 @@
 // importing createjs framework
 import "createjs";
 // importing game constants
-import { STAGE_WIDTH, STAGE_HEIGHT, FRAME_RATE, ASSET_MANIFEST } from "./Constants";
+import { STAGE_WIDTH, STAGE_HEIGHT, FRAME_RATE, ASSET_MANIFEST, BALL_RESET_X, BALL_RESET_Y, PADDLE_RESET_X, PADDLE_RESET_Y } from "./Constants";
 import { AssetManager } from "./AssetManager";
 import { boxHit } from "./Toolkit";
 import { pointHit } from "./Toolkit";
@@ -21,28 +21,49 @@ let assetManager:AssetManager;
 let borderTop:createjs.Sprite;
 let borderLeft:createjs.Sprite;
 let borderRight:createjs.Sprite;
+let background:createjs.Sprite;
 
+// cards and menus variables
+let title:createjs.Sprite;
+let death:createjs.Sprite;
+let gameOver:createjs.Sprite;
+let pressStart:createjs.Sprite;
+let pause:createjs.Sprite;
+let win:createjs.Sprite;
+
+// sprites to represent remaining lives
+let life1:createjs.Sprite;
+let life2:createjs.Sprite;
+let life3:createjs.Sprite;
+
+// the paddle, ball and bricks!
 let paddle:Paddle;
 let ball:Ball;
 let bricks:Brick[];
 
-let gameOver:boolean;
+// player lives
 let lives:number = 3;
 
+// variables for controls
 let leftKey:boolean = false;
 let rightKey:boolean = false;
 let spaceBar:boolean = false;
 
+// used in passing bricks into methods
 let index:number;
 
+// state machine for the game itself
 let STATE_START:number = 0;
 let STATE_PLAYING:number = 1;
 let STATE_PAUSED:number = 2;
 let STATE_DEAD:number = 3;
 let STATE_GAMEOVER:number = 4;
+let STATE_TITLE:number = 5;
+let STATE_WIN:number = 6;
 
-let gameState:number = 0;
+let gameState:number = 5;
 
+// method for monitoring input, and the space bar's behaviors
 function monitorKeys():void {
     if (leftKey) {
         paddle.direction = Paddle.LEFT;
@@ -54,11 +75,12 @@ function monitorKeys():void {
 
         switch (gameState)
         {
+            case STATE_TITLE:
+                setState(STATE_START)
+            break;
+
             case STATE_START:
-                // hide title image sprite
-                ball.state = Ball.STATE_MOVING;
-                paddle.state = Paddle.STATE_MOVING;
-                gameState = STATE_PLAYING;
+                setState(STATE_PLAYING)
             break;
 
             case STATE_PLAYING:
@@ -70,17 +92,17 @@ function monitorKeys():void {
             break;
 
             case STATE_DEAD:
-                // remove dead message
-                ball.state = Ball.STATE_MOVING;
-                paddle.state = Paddle.STATE_MOVING;
-                gameState = STATE_PLAYING;
+                setState(STATE_START);
             break;
 
             case STATE_GAMEOVER:
-                // remove game over message
-                ball.state = Ball.STATE_MOVING;
-                paddle.state = Paddle.STATE_MOVING;
-                gameState = STATE_PLAYING;
+                setBoard();
+                setState(STATE_START);
+            break;
+
+            case STATE_WIN:
+                setBoard();
+                setState(STATE_START);
             break;
         }
 
@@ -90,33 +112,104 @@ function monitorKeys():void {
     }
 }
 
+// changes the game's state and performs related operations
 function setState(value:number) {
-    // gameState = value;
-
-
     switch (value)
     {
         case STATE_START:
-
+            stage.removeChild(title);
+            stage.addChild(pressStart);
+            if (life1.isVisible) stage.removeChild(life1);
+            if (life2.isVisible) stage.removeChild(life2);
+            if (life3.isVisible) stage.removeChild(life3);
+            if (death.isVisible) stage.removeChild(death);
+            if (gameOver.isVisible) stage.removeChild(gameOver);
+            if (win.isVisible) stage.removeChild(win);
             gameState = value;
         break;
 
         case STATE_PLAYING:
-            // remove paused message
+            createjs.Sound.play("bounce1");
+            if (pressStart.isVisible) stage.removeChild(pressStart);
+            if (pause.isVisible) stage.removeChild(pause);
+            if (life1.isVisible) stage.removeChild(life1);
+            if (life2.isVisible) stage.removeChild(life2);
+            if (life3.isVisible) stage.removeChild(life3);
             ball.state = Ball.STATE_MOVING;
             paddle.state = Paddle.STATE_MOVING;
             gameState = value;
         break;
 
         case STATE_PAUSED:
-            // show paused message
+            stage.addChild(pause);
+            stage.addChild(pressStart);
+            if (lives == 3)
+            {
+                stage.addChild(life3);
+                stage.addChild(life2);
+                stage.addChild(life1);
+            }
+            else if (lives == 2) 
+            {
+                stage.addChild(life2);
+                stage.addChild(life1);
+            } 
+            
+            else if (lives == 1) stage.addChild(life1);
             ball.state = Ball.STATE_PAUSED;
             paddle.state = Paddle.STATE_PAUSED;
+            gameState = value;
+        break;
+
+        case STATE_DEAD:
+            createjs.Sound.play("dead");
+            lives--;
+            stage.addChild(death);
+            if (lives == 0)
+            {
+                setState(STATE_GAMEOVER);
+                break;
+            }
+            if (lives == 2) 
+            {
+                stage.addChild(life2);
+                stage.addChild(life1);
+            } else if (lives == 1) stage.addChild(life1);
+
+            gameState = STATE_DEAD;
+            ball.directionV = Ball.UP;
+            ball.positionMe(BALL_RESET_X, BALL_RESET_Y);
+            paddle.positionMe(PADDLE_RESET_X, PADDLE_RESET_Y);
+            paddle.state = Paddle.STATE_PAUSED;
+            gameState = value;
+        break;
+
+        case STATE_GAMEOVER:
+            createjs.Sound.play("dead");
+            stage.addChild(gameOver);
+            bricks.forEach(removeBricks);
+            stage.removeChild(ball.sprite);
+            stage.removeChild(paddle.sprite);
+            gameState = value;
+        break;
+
+        case STATE_WIN:
+            createjs.Sound.play("win");
+            stage.addChild(win);
+            stage.removeChild(ball.sprite);
+            stage.removeChild(paddle.sprite);
             gameState = value;
         break;
     }
 }
 
+// if the ball falls off the screen, this triggers the Dead state
+function setDead()
+{
+    setState(STATE_DEAD);
+}
+
+// method for the bricks only, they check if the ball collides with them
 function monitorBrickCollisions(input: any) {
 
     if (boxHit(input.spriteOverlay, ball.sprite)) {
@@ -128,10 +221,17 @@ function monitorBrickCollisions(input: any) {
 
 }
 
+// removes all bricks in the case of a game over
+function removeBricks(input: any) {
+    input.breakMe();
+}
+
+// monitors just the paddle colliding with the ball
 function monitorPaddleCollisions():void {
 
     if (boxHit(paddle.sprite, ball.sprite)) {
         ball.changeDirection();
+        createjs.Sound.play("bounce1");
     }
 
 }
@@ -145,10 +245,24 @@ function onReady(e:createjs.Event):void {
     borderLeft = assetManager.getSprite("sprites", "sprites/borderV", 0, 32);
     borderRight = assetManager.getSprite("sprites", "sprites/borderV", 768, 32);
 
+    background = assetManager.getSprite("sprites", "sprites/background", 0, 0);
+    title = assetManager.getSprite("sprites", "sprites/title", 160, 100);
+    death = assetManager.getSprite("sprites", "sprites/death", 160, 100);
+    gameOver = assetManager.getSprite("sprites", "sprites/gameOver", 160, 100);
+    pressStart = assetManager.getSprite("sprites", "sprites/pressStart", 170, 525);
+    pause = assetManager.getSprite("sprites", "sprites/pause", 160, 100);
+    win = assetManager.getSprite("sprites", "sprites/win", 160, 100);
 
+    life1 = assetManager.getSprite("sprites", "sprites/paddle", 220, 420);
+    life2 = assetManager.getSprite("sprites", "sprites/paddle", 357, 420);
+    life3 = assetManager.getSprite("sprites", "sprites/paddle", 495, 420);    
+
+    stage.addChild(background);
     stage.addChild(borderTop);
     stage.addChild(borderLeft);
     stage.addChild(borderRight);
+
+    stage.addEventListener("ballDead", setDead);
 
     setBoard();
 
@@ -161,15 +275,10 @@ function onReady(e:createjs.Event):void {
     console.log(">> game ready");
 }
 
-function startScreen():void{
-    // create a sprite title card and put here
-    console.log("WELCOME TO GAME! PRESS SPACE TO CONTINUE!")
-
-}
-
+// sets up the board
 function setBoard():void{
     bricks = [];
-    gameOver = false;
+    lives = 3;
 
     let y:number = 40;
     let x:number = 40;
@@ -177,15 +286,11 @@ function setBoard():void{
     let count:number = 0;
     let count2:number = 0;
 
-    Brick.colors = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
-
     for (let n = 0; n < 126; n++)
     {
         bricks[n] = new Brick(stage, assetManager);
         bricks[n].positionMe(x, y);
         bricks[n].setState(z);
-        
-        // cards[n].on("click", onCardClick);
 
         x = x + 40
         count++;
@@ -200,12 +305,15 @@ function setBoard():void{
     }
 
     paddle = new Paddle(stage, assetManager);
-    paddle.positionMe(360, 500);
+    paddle.positionMe(PADDLE_RESET_X, PADDLE_RESET_Y);
 
     ball = new Ball(stage, assetManager);
-    ball.positionMe(360, 400);
+    ball.positionMe(BALL_RESET_X, BALL_RESET_Y);
+
+    stage.addChild(title);
 }
 
+// listens for keyboard inputs
 function onKeyDown(e:KeyboardEvent):void {
     // console.log("key has been pressed down: " + e.key);
     if (e.key == "ArrowLeft") leftKey = true;

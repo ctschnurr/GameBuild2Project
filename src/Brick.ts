@@ -2,6 +2,7 @@ import { AssetManager } from "./AssetManager";
 
 export class Brick {
 
+    // state machine to handle the color components
     public static STATE_RED:number = 0;
     public static STATE_ORANGE:number = 1;
     public static STATE_YELLOW:number = 2;
@@ -12,14 +13,13 @@ export class Brick {
 
     private _state:number;
 
-    static colors = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
-
+    // sprite related variables
     private _sprite:createjs.Sprite;
     private _spriteOverlay:createjs.Sprite;
     private stage:createjs.StageGL;
 
+    // constructing bricks!
     constructor(stage:createjs.StageGL, assetManager:AssetManager) {
-        // initialization of properties
         this.stage = stage;
         this._sprite = assetManager.getSprite("sprites", "sprites/brick_red", 0, 0);
         this._spriteOverlay = assetManager.getSprite("sprites", "sprites/brick_Idle", 0, 0);
@@ -29,6 +29,7 @@ export class Brick {
         this._state = 0;
     }
 
+    // used to position the brick in the needed space
     public positionMe(x:number, y:number):void {
         this._spriteOverlay.x = x;
         this._spriteOverlay.y = y;
@@ -37,14 +38,17 @@ export class Brick {
         this._sprite.y = y;
     }
 
+    // returns the brick's color sprite
     get sprite() {
         return this._sprite;
     }
 
+    // returns the box overlay for the brick
     get spriteOverlay() {
         return this._spriteOverlay;
     }
 
+    // sets the state/assigns the color for the brick
     public setState(z:number):void {
         this._state = z;
 
@@ -81,9 +85,11 @@ export class Brick {
 
     }
 
+    // handles the destruction of bricks
     public breakMe():void{
     
         let sprite:createjs.Sprite = this._spriteOverlay;
+        createjs.Sound.play("brickBreak");
         this._spriteOverlay.on("animationend", () => {
 
             this._spriteOverlay.stop();

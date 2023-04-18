@@ -4,7 +4,7 @@
     "sprites.png"
 ],
 
-"framerate": 20,
+"framerate": 30,
 "frames": [
     [1, 1, 28, 10, 0, -6, -5],
     [31, 1, 28, 10, 0, -6, -5],
@@ -54,8 +54,15 @@
     [691, 1, 89, 20, 0, 0, 0],
     [782, 1, 89, 20, 0, 0, 0],
     [782, 1, 89, 20, 0, 0, 0],
-    [1, 23, 800, 32, 0, 0, 0],
-    [803, 23, 32, 536, 0, 0, 0]
+    [1, 23, 455, 22, 0, -5, -5],
+    [1, 47, 800, 32, 0, 0, 0],
+    [1, 81, 486, 388, 0, 0, 0],
+    [489, 81, 486, 388, 0, 0, 0],
+    [1, 471, 486, 388, 0, 0, 0],
+    [489, 471, 486, 388, 0, 0, 0],
+    [1, 861, 486, 388, 0, 0, 0],
+    [489, 861, 32, 536, 0, 0, 0],
+    [1, 1399, 800, 568, 0, 0, 0]
 ],
 
 "animations": {
@@ -68,15 +75,22 @@
     "sprites/brick_yellow": { "frames": [6] },
     "sprites/ball_Bounce": { "frames": [7, 9, 15, 16, 10, 11, 17, 18, 12, 8] },
     "sprites/ball_Idle": { "frames": [19, 20, 21, 22, 13, 14, 23, 24] },
-    "sprites/brick_Destroy": { "frames": [25, 26, 30, 30, 27, 31, 31, 28, 29] },
-    "sprites/brick_Idle": { "frames": [32, 32, 33, 33, 34, 34, 35, 35, 38, 38, 39, 39, 36, 36, 37] },
+    "sprites/brick_Destroy": { "frames": [25, 26, 30, 27, 31, 28, 29] },
+    "sprites/brick_Idle": { "frames": [32, 33, 34, 35, 38, 39, 36, 37] },
     "sprites/paddle": { "frames": [40, 41, 42, 43, 44, 45, 46, 47] },
-    "sprites/borderH": { "frames": [48] },
-    "sprites/borderV": { "frames": [49] }
+    "sprites/pressStart": { "frames": [48] },
+    "sprites/borderH": { "frames": [49] },
+    "sprites/death": { "frames": [50] },
+    "sprites/gameOver": { "frames": [51] },
+    "sprites/pause": { "frames": [52] },
+    "sprites/title": { "frames": [53] },
+    "sprites/win": { "frames": [54] },
+    "sprites/borderV": { "frames": [55] },
+    "sprites/background": { "frames": [56] }
 },
 
 "texturepacker": [
-        "SmartUpdateHash: $TexturePacker:SmartUpdate:cd310d93a7fea2f29fc3df0a906368b3:a2d0c23ba7a16f2786a36ee93eeb3e03:1eabdf11f75e3a4fe3147baf7b5be24b$",
+        "SmartUpdateHash: $TexturePacker:SmartUpdate:b82cd69c7279d14b3e476b8eda002b69:db9dba70cd9d92b955dcebf198d367e1:1eabdf11f75e3a4fe3147baf7b5be24b$",
         "Created with TexturePacker (https://www.codeandweb.com/texturepacker) for EaselJS"
 ]
 
